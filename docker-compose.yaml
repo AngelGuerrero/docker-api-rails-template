@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: master
+
+  api:
+    build: ./api
+    command: bash -c "rm -f /api/tmp/pids/server.pid && foreman start -f /api/Procfile"
+    environment:
+      - PORT=3000
+    ports:
+      - 3000:3000
+    volumes:
+      - ./api:/api
+      - rails_log:/api/log
+    depends_on:
+      - db
+  
+volumes:
+  db:
+  rails_log:
